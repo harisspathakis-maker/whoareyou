@@ -3,169 +3,547 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EU Political Quiz</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <title>EU Political Profile</title>
 
   <style>
+    :root{
+      --bg:#f6f2e8;
+      --paper:#ffffff;
+      --ink:#111111;
+      --muted:#5f5f5f;
+      --line:#d9d2c4;
+      --accent:#b30000; /* Economist-ish red */
+      --accent2:#1f2937;
+      --field:#fbfaf7;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:#0b1020;
-      color:#e5e7eb;
+      background:var(--bg);
+      color:var(--ink);
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    .wrap{max-width:900px;margin:0 auto;padding:18px}
-    h1{margin:0 0 6px;font-size:22px}
-    .sub{color:#9ca3af;font-size:14px;margin-bottom:14px}
-    .card{
-      background:#111827;
-      border:1px solid #1f2937;
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .mast{
+      background:var(--paper);
+      border:1px solid var(--line);
       border-radius:14px;
-      padding:14px;
-      margin-bottom:12px;
+      box-shadow:var(--shadow);
+      padding:18px 16px;
     }
-    .q{font-weight:600;margin-bottom:8px}
-    input,select{
+    .kicker{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-size:11px;
+      color:var(--muted);
+      margin:0 0 6px;
+    }
+    h1{
+      margin:0;
+      font-size:26px;
+      line-height:1.1;
+      letter-spacing:-.01em;
+    }
+    .dek{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.45;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .grid{display:grid;gap:12px;margin-top:12px;grid-template-columns:1fr}
+    @media(min-width:900px){ .grid{grid-template-columns:1.15fr .85fr} }
+
+    .card{
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .sectionTitle{
+      margin:0 0 10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--accent2);
+    }
+
+    label{
+      display:block;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    input[type="email"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--field);
+      color:var(--ink);
+      font-size:15px;
+      outline:none;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .qBlock{
+      border-top:1px solid var(--line);
+      padding-top:12px;
+      margin-top:12px;
+    }
+    .qText{
+      margin:0 0 10px;
+      font-size:16px;
+      line-height:1.35;
+    }
+    select{
       width:100%;
       padding:12px;
-      border-radius:10px;
-      border:1px solid #374151;
-      background:#020617;
-      color:#e5e7eb;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--field);
+      color:var(--ink);
       font-size:15px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
+
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     button{
-      padding:12px 16px;
-      border-radius:10px;
-      border:0;
-      font-size:15px;
-      font-weight:700;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:14px;
       cursor:pointer;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:800;
+      letter-spacing:.02em;
     }
-    .primary{background:#60a5fa;color:#020617}
-    .ghost{background:transparent;border:1px solid #374151;color:#e5e7eb}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .primary{
+      border:1px solid #7a0000;
+      background:linear-gradient(180deg, #d10000, #a80000);
+      color:white;
+    }
+    .ghost{
+      border:1px solid var(--line);
+      background:transparent;
+      color:var(--accent2);
+    }
+
+    .msg{
+      margin-top:10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size:13px;
+      line-height:1.35;
+    }
+    .err{color:#9a1b1b;font-weight:800}
+    .ok{color:#0f6d3a;font-weight:800}
     .hide{display:none}
-    canvas{width:100%!important;height:auto!important}
+
+    /* Results */
+    .metric{
+      margin-top:12px;
+      border-top:1px solid var(--line);
+      padding-top:12px;
+    }
+    .metricHead{
+      display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .metricName{font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:12px;color:var(--accent2)}
+    .metricVal{font-weight:900;color:var(--accent2);font-size:12px}
+    .barRow{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:10px;
+      align-items:center;
+      margin-top:10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .bar{
+      height:12px;
+      background:#efe9dd;
+      border:1px solid var(--line);
+      border-radius:999px;
+      overflow:hidden;
+      position:relative;
+    }
+    .bar .mid{
+      position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#cfc6b6;
+    }
+    .fill{
+      height:100%;
+      width:50%;
+      background:linear-gradient(90deg, #b30000, #111111);
+    }
+    .summary{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .conclusion{
+      margin:10px 0 0;
+      font-size:16px;
+      line-height:1.45;
+    }
+
+    /* Compass */
+    .compassWrap{margin-top:14px}
+    .compassTitle{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:900;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:var(--accent2);
+      margin:0 0 8px;
+    }
+    .compass{
+      position:relative;
+      width:100%;
+      aspect-ratio: 1 / 1;
+      max-width:360px;
+      border:1px solid var(--line);
+      background:
+        linear-gradient(90deg, transparent 49.5%, #cfc6b6 50%, transparent 50.5%),
+        linear-gradient(180deg, transparent 49.5%, #cfc6b6 50%, transparent 50.5%),
+        #fbfaf7;
+      border-radius:14px;
+      overflow:hidden;
+    }
+    .axisLabel{
+      position:absolute;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-size:11px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .labTop{top:10px;left:50%;transform:translateX(-50%)}
+    .labBottom{bottom:10px;left:50%;transform:translateX(-50%)}
+    .labLeft{left:10px;top:50%;transform:translateY(-50%) rotate(-90deg)}
+    .labRight{right:10px;top:50%;transform:translateY(-50%) rotate(90deg)}
+    .dot{
+      position:absolute;
+      width:14px;height:14px;border-radius:50%;
+      background:var(--accent);
+      border:2px solid white;
+      box-shadow:0 6px 16px rgba(0,0,0,.18);
+      transform:translate(-50%,-50%);
+    }
+
+    .foot{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
   </style>
 </head>
 
 <body>
-<div class="wrap">
-  <h1>Πολιτικός Προσανατολισμός (ΕΕ)</h1>
-  <p class="sub">Απάντησε και δες το αποτέλεσμα με γράφημα & συμπέρασμα.</p>
-
-  <form id="quiz" class="card">
-    <div class="q">Email</div>
-    <input type="email" name="email" id="email" required placeholder="name@email.com">
-
-    <div id="questions"></div>
-
-    <div class="row" style="margin-top:12px">
-      <button class="primary" type="submit">Δες αποτέλεσμα</button>
-      <button class="ghost" type="button" onclick="location.reload()">Reset</button>
+  <div class="wrap">
+    <div class="mast">
+      <p class="kicker">EU PUBLIC OPINION • QUICK PROFILE</p>
+      <h1>Πολιτικό Προφίλ — δύο άξονες</h1>
+      <p class="dek">
+        Δώσε email, απάντησε σε 10 δηλώσεις και δες μια καθαρή σύνοψη:
+        <b>Οικονομία</b> (αριστερά ↔ δεξιά) και <b>Κοινωνικά</b> (φιλελεύθερα ↔ συντηρητικά).
+      </p>
     </div>
-  </form>
 
-  <div id="results" class="card hide">
-    <h3>Αποτέλεσμα</h3>
-    <p id="summary" class="sub"></p>
+    <div class="grid">
+      <div class="card">
+        <div class="sectionTitle">Questionnaire</div>
 
-    <canvas id="barChart"></canvas>
-    <br>
-    <canvas id="radarChart"></canvas>
+        <form id="quiz" autocomplete="on">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="name@email.com" required />
 
-    <div class="card" style="margin-top:12px">
-      <b>Συμπέρασμα</b>
-      <p id="conclusion" class="sub"></p>
+          <div id="questions"></div>
+
+          <div class="btnbar">
+            <button class="primary" type="submit">Αποτέλεσμα</button>
+            <button class="ghost" type="button" id="resetBtn">Reset</button>
+          </div>
+
+          <div id="msgErr" class="msg err hide"></div>
+          <div id="msgOk" class="msg ok hide"></div>
+
+          <div class="foot">
+            Το email και οι απαντήσεις αποστέλλονται μέσω Formspree στον διαχειριστή του quiz.
+            Δεν γίνεται marketing.
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="sectionTitle">Result</div>
+
+        <div id="results" class="hide">
+          <p id="summary" class="summary"></p>
+
+          <div class="metric">
+            <div class="metricHead">
+              <div class="metricName">Οικονομία</div>
+              <div class="metricVal" id="econVal">—</div>
+            </div>
+            <div class="barRow">
+              <span>Αριστερά</span>
+              <div class="bar"><div class="mid"></div><div class="fill" id="econBar"></div></div>
+              <span>Δεξιά</span>
+            </div>
+            <p class="summary" id="econText"></p>
+          </div>
+
+          <div class="metric">
+            <div class="metricHead">
+              <div class="metricName">Κοινωνικά</div>
+              <div class="metricVal" id="socVal">—</div>
+            </div>
+            <div class="barRow">
+              <span>Φιλελεύθερα</span>
+              <div class="bar"><div class="mid"></div><div class="fill" id="socBar"></div></div>
+              <span>Συντηρητικά</span>
+            </div>
+            <p class="summary" id="socText"></p>
+          </div>
+
+          <div class="compassWrap">
+            <div class="compassTitle">Political compass</div>
+            <div class="compass">
+              <div class="axisLabel labTop">Φιλελεύθερα</div>
+              <div class="axisLabel labBottom">Συντηρητικά</div>
+              <div class="axisLabel labLeft">Αριστερά</div>
+              <div class="axisLabel labRight">Δεξιά</div>
+              <div class="dot" id="dot" style="left:50%;top:50%"></div>
+            </div>
+            <div class="foot">*Ενδεικτικό εργαλείο: δεν είναι “ταμπέλα”.</div>
+          </div>
+
+          <div class="metric">
+            <div class="metricHead">
+              <div class="metricName">Συμπέρασμα</div>
+            </div>
+            <p class="conclusion" id="conclusion"></p>
+          </div>
+        </div>
+
+        <div id="resultsEmpty" class="summary">
+          Συμπλήρωσε το ερωτηματολόγιο για να εμφανιστεί το αποτέλεσμα.
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
 <script>
   const FORMSPREE_ENDPOINT = "https://formspree.io/f/xbdyzgbw";
 
-  const QUESTIONS = [
-    {id:"q1", t:"Το κράτος πρέπει να μειώνει τις ανισότητες.", econ:-1, soc:0},
-    {id:"q2", t:"Η ελεύθερη αγορά φέρνει ανάπτυξη.", econ:1, soc:0},
-    {id:"q3", t:"Υψηλότεροι φόροι στους πλούσιους είναι αναγκαίοι.", econ:-1, soc:0},
-    {id:"q4", t:"Οι ιδιωτικοποιήσεις βελτιώνουν υπηρεσίες.", econ:1, soc:0},
-
-    {id:"q5", t:"Τα δικαιώματα μειονοτήτων πρέπει να προστατεύονται.", econ:0, soc:-1},
-    {id:"q6", t:"Η τάξη και ασφάλεια είναι προτεραιότητα.", econ:0, soc:1},
-    {id:"q7", t:"Η μετανάστευση χρειάζεται αυστηρότερους κανόνες.", econ:0, soc:1},
-    {id:"q8", t:"Η ΕΕ πρέπει να πιέζει για πολιτικές κλίματος.", econ:-0.5, soc:-0.5},
-    {id:"q9", t:"Η ελευθερία λόγου χρειάζεται όρια.", econ:0, soc:1},
-    {id:"q10",t:"Δημόσιες δαπάνες σε υγεία/παιδεία πρέπει να αυξηθούν.", econ:-1, soc:0},
-  ];
-
+  // -2..+2 κλίμακα
   const SCALE = [
-    ["","— επίλεξε —"],
-    [-2,"-2 Διαφωνώ απόλυτα"],
-    [-1,"-1 Διαφωνώ"],
-    [0,"0 Ούτε/ούτε"],
-    [1,"+1 Συμφωνώ"],
-    [2,"+2 Συμφωνώ απόλυτα"],
+    { v:"",  t:"— επίλεξε —" },
+    { v:"-2",t:"-2  Διαφωνώ απόλυτα" },
+    { v:"-1",t:"-1  Διαφωνώ" },
+    { v:"0", t:"0   Ούτε/ούτε" },
+    { v:"1", t:"+1  Συμφωνώ" },
+    { v:"2", t:"+2  Συμφωνώ απόλυτα" },
   ];
 
-  const qs = document.getElementById("questions");
-  QUESTIONS.forEach(q=>{
-    qs.innerHTML += `
-      <div class="card">
-        <div class="q">${q.t}</div>
-        <select id="${q.id}">
-          ${SCALE.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join("")}
+  // 10 statements, weights on 2 axes:
+  // econ: -1 (left) ... +1 (right)
+  // soc:  -1 (liberal) ... +1 (conservative)
+  const QUESTIONS = [
+    { id:"q1", text:"Το κράτος πρέπει να μειώνει ενεργά τις κοινωνικές ανισότητες.", econ:-1, soc:0 },
+    { id:"q2", text:"Οι υψηλότεροι φόροι στους πολύ εύπορους είναι απαραίτητοι για κοινωνική συνοχή.", econ:-1, soc:0 },
+    { id:"q3", text:"Η αγορά (με σωστή ρύθμιση) είναι ο καλύτερος μηχανισμός ανάπτυξης.", econ:+1, soc:0 },
+    { id:"q4", text:"Οι ιδιωτικοποιήσεις μπορούν να βελτιώσουν την ποιότητα υπηρεσιών σε αρκετούς τομείς.", econ:+1, soc:0 },
+
+    { id:"q5", text:"Τα δικαιώματα μειονοτήτων πρέπει να προστατεύονται ακόμη κι αν ενοχλεί την πλειοψηφία.", econ:0, soc:-1 },
+    { id:"q6", text:"Σε κρίσεις, η τάξη/ασφάλεια πρέπει να προηγείται της ατομικής ελευθερίας.", econ:0, soc:+1 },
+    { id:"q7", text:"Η μετανάστευση χρειάζεται αυστηρότερους κανόνες για κοινωνική σταθερότητα.", econ:0, soc:+1 },
+    { id:"q8", text:"Η ΕΕ πρέπει να επιβάλει ισχυρούς κανόνες για το κλίμα ακόμη κι αν κοστίζουν βραχυπρόθεσμα.", econ:-0.5, soc:-0.5 },
+    { id:"q9", text:"Η ελευθερία λόγου πρέπει να έχει όρια όταν προκαλεί κοινωνική βλάβη.", econ:0, soc:+1 },
+    { id:"q10", text:"Οι δημόσιες δαπάνες σε υγεία/παιδεία πρέπει να αυξηθούν.", econ:-1, soc:0 },
+  ];
+
+  const $ = (sel) => document.querySelector(sel);
+
+  function showErr(t){ $("#msgErr").textContent=t; $("#msgErr").classList.remove("hide"); $("#msgOk").classList.add("hide"); }
+  function showOk(t){ $("#msgOk").textContent=t; $("#msgOk").classList.remove("hide"); $("#msgErr").classList.add("hide"); }
+  function clearMsgs(){ $("#msgErr").classList.add("hide"); $("#msgOk").classList.add("hide"); }
+
+  function renderQuestions(){
+    const host = $("#questions");
+    host.innerHTML = "";
+    QUESTIONS.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "qBlock";
+      div.innerHTML = `
+        <p class="qText"><b>${i+1}.</b> ${q.text}</p>
+        <select id="${q.id}" name="${q.id}" required>
+          ${SCALE.map(o=>`<option value="${o.v}">${o.t}</option>`).join("")}
         </select>
-      </div>`;
-  });
+      `;
+      host.appendChild(div);
+    });
+  }
 
-  function clamp(n){return Math.max(-100,Math.min(100,n));}
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
-  document.getElementById("quiz").addEventListener("submit", async e=>{
-    e.preventDefault();
-
-    let econ=0,soc=0,answers={};
+  function computeScores(){
+    let econ=0, soc=0;
+    const answers = {};
     for(const q of QUESTIONS){
-      const v=parseInt(document.getElementById(q.id).value);
-      if(isNaN(v)) return alert("Απάντησε όλες τις ερωτήσεις");
-      econ+=v*q.econ;
-      soc+=v*q.soc;
-      answers[q.id]=v;
+      const v = parseInt($("#"+q.id).value, 10);
+      if (Number.isNaN(v)) return null;
+      answers[q.id] = v;
+      econ += v * q.econ;
+      soc  += v * q.soc;
     }
 
-    const econPct=clamp(Math.round(econ*10));
-    const socPct=clamp(Math.round(soc*10));
+    const econMax = QUESTIONS.reduce((s,q)=> s + Math.abs(q.econ)*2, 0) || 1;
+    const socMax  = QUESTIONS.reduce((s,q)=> s + Math.abs(q.soc)*2, 0) || 1;
 
-    document.getElementById("results").classList.remove("hide");
-    document.getElementById("summary").textContent =
-      `Οικονομία: ${econPct}, Κοινωνικά: ${socPct}`;
+    const econPct = Math.round(clamp((econ / econMax) * 100, -100, 100));
+    const socPct  = Math.round(clamp((soc  / socMax)  * 100, -100, 100));
 
-    new Chart(barChart,{
-      type:"bar",
-      data:{labels:["Οικονομία","Κοινωνικά"],datasets:[{data:[econPct,socPct]}]},
-      options:{scales:{y:{min:-100,max:100}}}
+    return { econPct, socPct, answers };
+  }
+
+  function labelEcon(e){
+    if (e <= -50) return "σαφώς πιο αριστερά";
+    if (e <= -20) return "ήπια προς αριστερά";
+    if (e <  20)  return "κεντρώα οικονομική στάση";
+    if (e <  50)  return "ήπια προς δεξιά";
+    return "σαφώς πιο δεξιά";
+  }
+  function labelSoc(s){
+    if (s <= -50) return "σαφώς πιο φιλελεύθερα";
+    if (s <= -20) return "ήπια πιο φιλελεύθερα";
+    if (s <  20)  return "κεντρώα κοινωνική στάση";
+    if (s <  50)  return "ήπια πιο συντηρητικά";
+    return "σαφώς πιο συντηρητικά";
+  }
+
+  function conclusionText(econPct, socPct){
+    // quadrant-ish summary
+    let profile = "";
+    if (econPct < -15 && socPct < -15) profile = "προοδευτικό/κοινωνικά ανοιχτό με έμφαση σε κοινωνικό κράτος";
+    else if (econPct > 15 && socPct < -15) profile = "φιλελεύθερο οικονομικά με κοινωνικά ανοιχτές θέσεις";
+    else if (econPct < -15 && socPct > 15) profile = "κοινωνικό οικονομικά με πιο παραδοσιακές κοινωνικές θέσεις";
+    else if (econPct > 15 && socPct > 15) profile = "πιο δεξιά οικονομικά και πιο συντηρητικό κοινωνικά";
+    else profile = "μικτό/κεντρώο προφίλ χωρίς έντονη κλίση";
+
+    return `Οικονομικά είσαι ${labelEcon(econPct)} και κοινωνικά ${labelSoc(socPct)}. Συνολικά, προκύπτει <b>${profile}</b>.`;
+  }
+
+  function setBar(id, scorePct){
+    // map -100..100 to 0..100
+    const w = (scorePct + 100) / 2;
+    $(id).style.width = w + "%";
+  }
+
+  function setCompassDot(econPct, socPct){
+    // x: econ (-100 left .. +100 right) -> 0..100
+    // y: soc (-100 liberal TOP .. +100 conservative BOTTOM) -> 0..100
+    const x = (econPct + 100) / 2;
+    const y = (socPct + 100) / 2;
+    $("#dot").style.left = x + "%";
+    $("#dot").style.top  = y + "%";
+  }
+
+  async function sendToFormspree(payload){
+    const fd = new FormData();
+    fd.append("email", payload.email);
+    fd.append("econ", payload.econPct);
+    fd.append("soc", payload.socPct);
+    fd.append("conclusion", payload.conclusionPlain);
+    fd.append("answers_json", JSON.stringify(payload.answers));
+    fd.append("subject", `EU Quiz: Econ ${payload.econPct}, Soc ${payload.socPct}`);
+    fd.append("message",
+`Email: ${payload.email}
+Econ: ${payload.econPct}
+Soc: ${payload.socPct}
+Συμπέρασμα: ${payload.conclusionPlain}
+
+Απαντήσεις: ${JSON.stringify(payload.answers)}
+`);
+
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: "POST",
+      body: fd,
+      headers: { "Accept": "application/json" }
     });
 
-    new Chart(radarChart,{
-      type:"radar",
-      data:{labels:["Οικονομία","Κοινωνικά"],datasets:[{data:[econPct,socPct],fill:true}]},
-      options:{scales:{r:{min:-100,max:100}}}
-    });
+    if(!res.ok){
+      const txt = await res.text().catch(()=> "");
+      throw new Error("Formspree failed: " + res.status + " " + txt);
+    }
+  }
 
-    const conclusion =
-      `Οικονομικά ${econPct<0?"πιο αριστερά":"πιο δεξιά"}, `+
-      `κοινωνικά ${socPct<0?"πιο φιλελεύθερος":"πιο συντηρητικός"}.`;
+  renderQuestions();
 
-    document.getElementById("conclusion").textContent = conclusion;
+  $("#resetBtn").addEventListener("click", ()=>{
+    document.getElementById("quiz").reset();
+    $("#results").classList.add("hide");
+    $("#resultsEmpty").classList.remove("hide");
+    clearMsgs();
+  });
 
-    const fd=new FormData();
-    fd.append("email",document.getElementById("email").value);
-    fd.append("econ",econPct);
-    fd.append("soc",socPct);
-    fd.append("conclusion",conclusion);
-    fd.append("answers",JSON.stringify(answers));
+  $("#quiz").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    clearMsgs();
 
-    fetch(FORMSPREE_ENDPOINT,{method:"POST",body:fd,headers:{Accept:"application/json"}});
+    const email = $("#email").value.trim();
+    if(!email){ showErr("Βάλε email."); return; }
+
+    const scores = computeScores();
+    if(!scores){ showErr("Απάντησε σε όλες τις ερωτήσεις."); return; }
+
+    const { econPct, socPct, answers } = scores;
+
+    // UI
+    $("#results").classList.remove("hide");
+    $("#resultsEmpty").classList.add("hide");
+    $("#summary").textContent = `Σκορ: Οικονομία ${econPct} • Κοινωνικά ${socPct}`;
+
+    $("#econVal").textContent = econPct;
+    $("#socVal").textContent  = socPct;
+
+    setBar("#econBar", econPct);
+    setBar("#socBar", socPct);
+
+    $("#econText").textContent = `Ερμηνεία: ${labelEcon(econPct)}.`;
+    $("#socText").textContent  = `Ερμηνεία: ${labelSoc(socPct)}.`;
+
+    const concHTML = conclusionText(econPct, socPct);
+    $("#conclusion").innerHTML = concHTML;
+    const concPlain = concHTML.replace(/<[^>]*>/g, "");
+
+    // Send
+    try{
+      showOk("Αποστολή αποτελέσματος…");
+      await sendToFormspree({ email, econPct, socPct, answers, conclusionPlain: concPlain });
+      showOk("OK — στάλθηκε. ✅");
+    }catch(err){
+      console.error(err);
+      showErr("Δεν μπόρεσα να στείλω email (Formspree). Έλεγξε το Formspree form/activation ή spam.");
+    }
+
+    setCompassDot(econPct, socPct);
   });
 </script>
 </body>
