@@ -1,182 +1,172 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Πολιτικός Προσανατολισμός στην ΕΕ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EU Political Quiz</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 760px; margin: 0 auto; padding: 18px; line-height: 1.35; }
-    h1 { margin: 0 0 8px; font-size: 22px; }
-    .sub { margin: 0 0 16px; opacity: .8; font-size: 14px; }
-    .card { border: 1px solid #ddd; border-radius: 14px; padding: 14px; margin: 12px 0; background: #fff; }
-    .q { margin: 0 0 10px; font-weight: 650; font-size: 15px; }
-    select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; background: #fff; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-    button { padding: 12px 16px; border-radius: 12px; border: 0; cursor: pointer; font-size: 16px; }
-    .warn { color: #b00020; font-weight: 700; margin-top: 10px; }
-    .result { white-space: pre-wrap; margin-top: 16px; padding: 14px; border-radius: 14px; background: #f6f6f6; border: 1px solid #e6e6e6; font-size: 14px; }
-    .debug { margin-top: 10px; font-size: 12px; opacity: .75; white-space: pre-wrap; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:#0b1020;
+      color:#e5e7eb;
+    }
+    .wrap{max-width:900px;margin:0 auto;padding:18px}
+    h1{margin:0 0 6px;font-size:22px}
+    .sub{color:#9ca3af;font-size:14px;margin-bottom:14px}
+    .card{
+      background:#111827;
+      border:1px solid #1f2937;
+      border-radius:14px;
+      padding:14px;
+      margin-bottom:12px;
+    }
+    .q{font-weight:600;margin-bottom:8px}
+    input,select{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #374151;
+      background:#020617;
+      color:#e5e7eb;
+      font-size:15px;
+    }
+    button{
+      padding:12px 16px;
+      border-radius:10px;
+      border:0;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .primary{background:#60a5fa;color:#020617}
+    .ghost{background:transparent;border:1px solid #374151;color:#e5e7eb}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .hide{display:none}
+    canvas{width:100%!important;height:auto!important}
   </style>
 </head>
 
 <body>
-  <h1>Πολιτικός Προσανατολισμός στην ΕΕ</h1>
-  <p class="sub">Κλίμακα: -2 (διαφωνώ απόλυτα) έως +2 (συμφωνώ απόλυτα).</p>
+<div class="wrap">
+  <h1>Πολιτικός Προσανατολισμός (ΕΕ)</h1>
+  <p class="sub">Απάντησε και δες το αποτέλεσμα με γράφημα & συμπέρασμα.</p>
 
-  <form id="quiz" onsubmit="return false;">
-    <!-- ΟΙΚΟΝΟΜΙΑ -->
-    <div class="card">
-      <p class="q">1. Το κράτος πρέπει να παίζει ενεργό ρόλο στη μείωση των κοινωνικών ανισοτήτων.</p>
-      <select data-axis="economy"></select>
-    </div>
-    <div class="card">
-      <p class="q">2. Η ελεύθερη αγορά είναι πιο αποτελεσματική από το κράτος στη δημιουργία ευημερίας.</p>
-      <select data-axis="economy"></select>
-    </div>
-    <div class="card">
-      <p class="q">3. Οι υψηλοί φόροι στους πλούσιους αποθαρρύνουν την ανάπτυξη.</p>
-      <select data-axis="economy"></select>
-    </div>
+  <form id="quiz" class="card">
+    <div class="q">Email</div>
+    <input type="email" name="email" id="email" required placeholder="name@email.com">
 
-    <!-- ΚΟΙΝΩΝΙΚΑ -->
-    <div class="card">
-      <p class="q">4. Η κοινωνία πρέπει να προσαρμόζεται σε νέες μορφές οικογένειας και ταυτότητας.</p>
-      <select data-axis="social" data-invert="1"></select>
-    </div>
-    <div class="card">
-      <p class="q">5. Οι παραδοσιακές αξίες πρέπει να προστατεύονται, ακόμα κι αν περιορίζουν αλλαγές.</p>
-      <select data-axis="social"></select>
-    </div>
-    <div class="card">
-      <p class="q">6. Το κράτος πρέπει να παρεμβαίνει για την προώθηση της ισότητας φύλων και μειονοτήτων.</p>
-      <select data-axis="social" data-invert="1"></select>
-    </div>
+    <div id="questions"></div>
 
-    <!-- ΘΕΣΜΟΙ -->
-    <div class="card">
-      <p class="q">7. Σε κρίση, ένας ισχυρός ηγέτης είναι προτιμότερος από χρονοβόρες δημοκρατικές διαδικασίες.</p>
-      <select data-axis="democracy"></select>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" type="submit">Δες αποτέλεσμα</button>
+      <button class="ghost" type="button" onclick="location.reload()">Reset</button>
     </div>
-    <div class="card">
-      <p class="q">8. Η ανεξαρτησία της Δικαιοσύνης είναι θεμέλιο της δημοκρατίας.</p>
-      <select data-axis="democracy" data-invert="1"></select>
-    </div>
-    <div class="card">
-      <p class="q">9. Τα ΜΜΕ πρέπει να ρυθμίζονται αυστηρά από το κράτος.</p>
-      <select data-axis="democracy"></select>
-    </div>
-
-    <!-- ΕΕ -->
-    <div class="card">
-      <p class="q">10. Η ΕΕ πρέπει να έχει περισσότερες αρμοδιότητες από τα κράτη-μέλη.</p>
-      <select data-axis="eu" data-invert="1"></select>
-    </div>
-    <div class="card">
-      <p class="q">11. Η εθνική κυριαρχία πρέπει να υπερισχύει των αποφάσεων της ΕΕ.</p>
-      <select data-axis="eu"></select>
-    </div>
-    <div class="card">
-      <p class="q">12. Η κοινή ευρωπαϊκή πολιτική σε άμυνα και μετανάστευση είναι απαραίτητη.</p>
-      <select data-axis="eu" data-invert="1"></select>
-    </div>
-
-    <div class="row">
-      <button type="button" onclick="calc()">Δες αποτέλεσμα</button>
-      <button type="button" onclick="resetForm()">Καθάρισμα</button>
-    </div>
-
-    <div id="warn" class="warn" style="display:none;">Συμπλήρωσε όλες τις ερωτήσεις πρώτα 🙂</div>
   </form>
 
-  <div id="out" class="result" style="display:none;"></div>
-  <div id="debug" class="debug"></div>
+  <div id="results" class="card hide">
+    <h3>Αποτέλεσμα</h3>
+    <p id="summary" class="sub"></p>
+
+    <canvas id="barChart"></canvas>
+    <br>
+    <canvas id="radarChart"></canvas>
+
+    <div class="card" style="margin-top:12px">
+      <b>Συμπέρασμα</b>
+      <p id="conclusion" class="sub"></p>
+    </div>
+  </div>
+</div>
 
 <script>
-  // επιλογές (χωρίς <template> για max συμβατότητα)
-  const optionsHTML = `
-    <option value="" selected>— επίλεξε —</option>
-    <option value="-2">Διαφωνώ απόλυτα</option>
-    <option value="-1">Διαφωνώ</option>
-    <option value="0">Ούτε/ούτε</option>
-    <option value="1">Συμφωνώ</option>
-    <option value="2">Συμφωνώ απόλυτα</option>
-  `;
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/xbdyzgbw";
 
-  function initSelects(){
-    document.querySelectorAll("select[data-axis]").forEach(sel => {
-      sel.innerHTML = optionsHTML;
-    });
-  }
+  const QUESTIONS = [
+    {id:"q1", t:"Το κράτος πρέπει να μειώνει τις ανισότητες.", econ:-1, soc:0},
+    {id:"q2", t:"Η ελεύθερη αγορά φέρνει ανάπτυξη.", econ:1, soc:0},
+    {id:"q3", t:"Υψηλότεροι φόροι στους πλούσιους είναι αναγκαίοι.", econ:-1, soc:0},
+    {id:"q4", t:"Οι ιδιωτικοποιήσεις βελτιώνουν υπηρεσίες.", econ:1, soc:0},
 
-  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-  function to100(r){ return clamp(Math.round((r / 6) * 100), -100, 100); }
+    {id:"q5", t:"Τα δικαιώματα μειονοτήτων πρέπει να προστατεύονται.", econ:0, soc:-1},
+    {id:"q6", t:"Η τάξη και ασφάλεια είναι προτεραιότητα.", econ:0, soc:1},
+    {id:"q7", t:"Η μετανάστευση χρειάζεται αυστηρότερους κανόνες.", econ:0, soc:1},
+    {id:"q8", t:"Η ΕΕ πρέπει να πιέζει για πολιτικές κλίματος.", econ:-0.5, soc:-0.5},
+    {id:"q9", t:"Η ελευθερία λόγου χρειάζεται όρια.", econ:0, soc:1},
+    {id:"q10",t:"Δημόσιες δαπάνες σε υγεία/παιδεία πρέπει να αυξηθούν.", econ:-1, soc:0},
+  ];
 
-  function calc(){
-    const debug = document.getElementById("debug");
-    try{
-      const selects = Array.from(document.querySelectorAll("select[data-axis]"));
-      const warn = document.getElementById("warn");
-      const out = document.getElementById("out");
+  const SCALE = [
+    ["","— επίλεξε —"],
+    [-2,"-2 Διαφωνώ απόλυτα"],
+    [-1,"-1 Διαφωνώ"],
+    [0,"0 Ούτε/ούτε"],
+    [1,"+1 Συμφωνώ"],
+    [2,"+2 Συμφωνώ απόλυτα"],
+  ];
 
-      if(selects.length !== 12){
-        debug.textContent = "DEBUG: Δεν βρέθηκαν 12 ερωτήσεις. Βρέθηκαν: " + selects.length;
-      }
+  const qs = document.getElementById("questions");
+  QUESTIONS.forEach(q=>{
+    qs.innerHTML += `
+      <div class="card">
+        <div class="q">${q.t}</div>
+        <select id="${q.id}">
+          ${SCALE.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join("")}
+        </select>
+      </div>`;
+  });
 
-      if(selects.some(s => s.value === "")){
-        warn.style.display = "block";
-        out.style.display = "none";
-        return;
-      }
-      warn.style.display = "none";
+  function clamp(n){return Math.max(-100,Math.min(100,n));}
 
-      const raw = { economy:0, social:0, democracy:0, eu:0 };
+  document.getElementById("quiz").addEventListener("submit", async e=>{
+    e.preventDefault();
 
-      selects.forEach(s=>{
-        let v = Number(s.value);
-        if(s.dataset.invert === "1") v = -v;
-        raw[s.dataset.axis] += v;
-      });
-
-      const E = to100(raw.economy);
-      const S = to100(raw.social);
-      const D = to100(raw.democracy);
-      const U = to100(raw.eu);
-
-      const profile = [
-        E <= -20 ? "οικονομικά πιο αναδιανεμητικός" : (E >= 20 ? "οικονομικά πιο φιλο-αγορά" : "οικονομικά κεντρώος"),
-        S <= -20 ? "κοινωνικά πιο προοδευτικός" : (S >= 20 ? "κοινωνικά πιο συντηρητικός" : "κοινωνικά κεντρώος"),
-        D <= -20 ? "φιλελεύθερος στους θεσμούς" : (D >= 20 ? "πιο αυταρχικός στους θεσμούς" : "μικτή στάση στους θεσμούς"),
-        U <= -20 ? "φιλοευρωπαϊκός" : (U >= 20 ? "ευρωσκεπτικιστής" : "ουδέτερος για την ΕΕ")
-      ].join(", ");
-
-      out.style.display = "block";
-      out.textContent =
-`ΑΠΟΤΕΛΕΣΜΑ
-
-Οικονομία: ${E}  (− κράτος / + αγορά)
-Κοινωνικά: ${S}  (− προοδευτικό / + συντηρητικό)
-Θεσμοί:    ${D}  (− φιλελεύθερο / + αυταρχικό)
-ΕΕ:        ${U}  (− φιλο-ΕΕ / + ευρωσκεπτικιστικό)
-
-Σύνοψη: ${profile}`;
-
-      out.scrollIntoView({ behavior: "smooth", block: "start" });
-      debug.textContent = "";
-    } catch(err){
-      document.getElementById("debug").textContent = "JS ERROR: " + (err && err.message ? err.message : String(err));
+    let econ=0,soc=0,answers={};
+    for(const q of QUESTIONS){
+      const v=parseInt(document.getElementById(q.id).value);
+      if(isNaN(v)) return alert("Απάντησε όλες τις ερωτήσεις");
+      econ+=v*q.econ;
+      soc+=v*q.soc;
+      answers[q.id]=v;
     }
-  }
 
-  function resetForm(){
-    document.getElementById("quiz").reset();
-    document.getElementById("out").style.display = "none";
-    document.getElementById("warn").style.display = "none";
-    document.getElementById("debug").textContent = "";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+    const econPct=clamp(Math.round(econ*10));
+    const socPct=clamp(Math.round(soc*10));
 
-  // init
-  initSelects();
+    document.getElementById("results").classList.remove("hide");
+    document.getElementById("summary").textContent =
+      `Οικονομία: ${econPct}, Κοινωνικά: ${socPct}`;
+
+    new Chart(barChart,{
+      type:"bar",
+      data:{labels:["Οικονομία","Κοινωνικά"],datasets:[{data:[econPct,socPct]}]},
+      options:{scales:{y:{min:-100,max:100}}}
+    });
+
+    new Chart(radarChart,{
+      type:"radar",
+      data:{labels:["Οικονομία","Κοινωνικά"],datasets:[{data:[econPct,socPct],fill:true}]},
+      options:{scales:{r:{min:-100,max:100}}}
+    });
+
+    const conclusion =
+      `Οικονομικά ${econPct<0?"πιο αριστερά":"πιο δεξιά"}, `+
+      `κοινωνικά ${socPct<0?"πιο φιλελεύθερος":"πιο συντηρητικός"}.`;
+
+    document.getElementById("conclusion").textContent = conclusion;
+
+    const fd=new FormData();
+    fd.append("email",document.getElementById("email").value);
+    fd.append("econ",econPct);
+    fd.append("soc",socPct);
+    fd.append("conclusion",conclusion);
+    fd.append("answers",JSON.stringify(answers));
+
+    fetch(FORMSPREE_ENDPOINT,{method:"POST",body:fd,headers:{Accept:"application/json"}});
+  });
 </script>
 </body>
 </html>
