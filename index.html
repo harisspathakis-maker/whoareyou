@@ -7,15 +7,13 @@
 
   <style>
     :root{
-      --bg:#f6f2e8;
+      --bg:#f7f7f7;
       --paper:#ffffff;
       --ink:#111111;
-      --muted:#5f5f5f;
-      --line:#d9d2c4;
-      --accent:#b30000; /* Economist-ish red */
-      --accent2:#1f2937;
-      --field:#fbfaf7;
-      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --muted:#666666;
+      --line:#d9d9d9;
+      --accent:#b30000; /* restrained Economist-ish red */
+      --field:#ffffff;
     }
     *{box-sizing:border-box}
     body{
@@ -27,25 +25,26 @@
       -moz-osx-font-smoothing: grayscale;
     }
     .wrap{max-width:980px;margin:0 auto;padding:18px}
+
     .mast{
       background:var(--paper);
       border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow:var(--shadow);
+      border-radius:10px;
       padding:18px 16px;
     }
     .kicker{
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      letter-spacing:.12em;
+      letter-spacing:.14em;
       text-transform:uppercase;
       font-size:11px;
       color:var(--muted);
-      margin:0 0 6px;
+      margin:0 0 8px;
     }
+    .rule{height:2px;background:var(--accent);width:56px;margin:10px 0 12px}
     h1{
       margin:0;
       font-size:26px;
-      line-height:1.1;
+      line-height:1.08;
       letter-spacing:-.01em;
     }
     .dek{
@@ -62,25 +61,24 @@
     .card{
       background:var(--paper);
       border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow:var(--shadow);
+      border-radius:10px;
       padding:14px;
     }
     .sectionTitle{
       margin:0 0 10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-weight:800;
-      font-size:13px;
-      letter-spacing:.08em;
+      font-size:12px;
+      letter-spacing:.12em;
       text-transform:uppercase;
-      color:var(--accent2);
+      color:var(--ink);
     }
 
     label{
       display:block;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-size:12px;
-      letter-spacing:.06em;
+      letter-spacing:.10em;
       text-transform:uppercase;
       color:var(--muted);
       margin-bottom:6px;
@@ -88,7 +86,7 @@
     input[type="email"]{
       width:100%;
       padding:12px 12px;
-      border-radius:12px;
+      border-radius:8px;
       border:1px solid var(--line);
       background:var(--field);
       color:var(--ink);
@@ -96,6 +94,7 @@
       outline:none;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
+
     .qBlock{
       border-top:1px solid var(--line);
       padding-top:12px;
@@ -109,7 +108,7 @@
     select{
       width:100%;
       padding:12px;
-      border-radius:12px;
+      border-radius:8px;
       border:1px solid var(--line);
       background:var(--field);
       color:var(--ink);
@@ -119,23 +118,24 @@
 
     .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     button{
-      border-radius:12px;
+      border-radius:8px;
       padding:12px 14px;
       font-size:14px;
       cursor:pointer;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-weight:800;
-      letter-spacing:.02em;
+      letter-spacing:.03em;
+      text-transform:uppercase;
     }
     .primary{
-      border:1px solid #7a0000;
-      background:linear-gradient(180deg, #d10000, #a80000);
+      border:1px solid var(--ink);
+      background:var(--ink);
       color:white;
     }
     .ghost{
       border:1px solid var(--line);
       background:transparent;
-      color:var(--accent2);
+      color:var(--ink);
     }
 
     .msg{
@@ -144,11 +144,18 @@
       font-size:13px;
       line-height:1.35;
     }
-    .err{color:#9a1b1b;font-weight:800}
+    .err{color:#8b0000;font-weight:800}
     .ok{color:#0f6d3a;font-weight:800}
     .hide{display:none}
 
     /* Results */
+    .summary{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
     .metric{
       margin-top:12px;
       border-top:1px solid var(--line);
@@ -158,8 +165,14 @@
       display:flex;justify-content:space-between;gap:10px;align-items:baseline;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
-    .metricName{font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:12px;color:var(--accent2)}
-    .metricVal{font-weight:900;color:var(--accent2);font-size:12px}
+    .metricName{
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:var(--ink)
+    }
+    .metricVal{font-weight:900;color:var(--ink);font-size:12px}
     .barRow{
       display:grid;
       grid-template-columns:auto 1fr auto;
@@ -171,25 +184,25 @@
       color:var(--muted);
     }
     .bar{
-      height:12px;
-      background:#efe9dd;
+      height:10px;
+      background:#f0f0f0;
       border:1px solid var(--line);
       border-radius:999px;
       overflow:hidden;
       position:relative;
     }
     .bar .mid{
-      position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#cfc6b6;
+      position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#c7c7c7;
     }
     .fill{
       height:100%;
       width:50%;
-      background:linear-gradient(90deg, #b30000, #111111);
+      background:var(--ink);
     }
-    .summary{
+    .fine{
       margin:8px 0 0;
       color:var(--muted);
-      font-size:14px;
+      font-size:13px;
       line-height:1.45;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
@@ -204,10 +217,10 @@
     .compassTitle{
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-weight:900;
-      letter-spacing:.06em;
+      letter-spacing:.12em;
       text-transform:uppercase;
       font-size:12px;
-      color:var(--accent2);
+      color:var(--ink);
       margin:0 0 8px;
     }
     .compass{
@@ -217,17 +230,17 @@
       max-width:360px;
       border:1px solid var(--line);
       background:
-        linear-gradient(90deg, transparent 49.5%, #cfc6b6 50%, transparent 50.5%),
-        linear-gradient(180deg, transparent 49.5%, #cfc6b6 50%, transparent 50.5%),
-        #fbfaf7;
-      border-radius:14px;
+        linear-gradient(90deg, transparent 49.5%, #c7c7c7 50%, transparent 50.5%),
+        linear-gradient(180deg, transparent 49.5%, #c7c7c7 50%, transparent 50.5%),
+        #ffffff;
+      border-radius:10px;
       overflow:hidden;
     }
     .axisLabel{
       position:absolute;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-size:11px;
-      letter-spacing:.06em;
+      letter-spacing:.10em;
       text-transform:uppercase;
       color:var(--muted);
     }
@@ -237,14 +250,12 @@
     .labRight{right:10px;top:50%;transform:translateY(-50%) rotate(90deg)}
     .dot{
       position:absolute;
-      width:14px;height:14px;border-radius:50%;
+      width:12px;height:12px;border-radius:50%;
       background:var(--accent);
       border:2px solid white;
-      box-shadow:0 6px 16px rgba(0,0,0,.18);
       transform:translate(-50%,-50%);
     }
-
-    .foot{
+    .note{
       margin-top:10px;
       color:var(--muted);
       font-size:12px;
@@ -257,11 +268,11 @@
 <body>
   <div class="wrap">
     <div class="mast">
-      <p class="kicker">EU PUBLIC OPINION • QUICK PROFILE</p>
+      <p class="kicker">EU PUBLIC OPINION</p>
+      <div class="rule"></div>
       <h1>Πολιτικό Προφίλ — δύο άξονες</h1>
       <p class="dek">
-        Δώσε email, απάντησε σε 10 δηλώσεις και δες μια καθαρή σύνοψη:
-        <b>Οικονομία</b> (αριστερά ↔ δεξιά) και <b>Κοινωνικά</b> (φιλελεύθερα ↔ συντηρητικά).
+        Απάντησε σε 10 δηλώσεις και δες καθαρή σύνοψη σε <b>Οικονομία</b> και <b>Κοινωνικά</b>.
       </p>
     </div>
 
@@ -282,11 +293,6 @@
 
           <div id="msgErr" class="msg err hide"></div>
           <div id="msgOk" class="msg ok hide"></div>
-
-          <div class="foot">
-            Το email και οι απαντήσεις αποστέλλονται μέσω Formspree στον διαχειριστή του quiz.
-            Δεν γίνεται marketing.
-          </div>
         </form>
       </div>
 
@@ -306,7 +312,7 @@
               <div class="bar"><div class="mid"></div><div class="fill" id="econBar"></div></div>
               <span>Δεξιά</span>
             </div>
-            <p class="summary" id="econText"></p>
+            <p class="fine" id="econText"></p>
           </div>
 
           <div class="metric">
@@ -319,7 +325,7 @@
               <div class="bar"><div class="mid"></div><div class="fill" id="socBar"></div></div>
               <span>Συντηρητικά</span>
             </div>
-            <p class="summary" id="socText"></p>
+            <p class="fine" id="socText"></p>
           </div>
 
           <div class="compassWrap">
@@ -331,7 +337,7 @@
               <div class="axisLabel labRight">Δεξιά</div>
               <div class="dot" id="dot" style="left:50%;top:50%"></div>
             </div>
-            <div class="foot">*Ενδεικτικό εργαλείο: δεν είναι “ταμπέλα”.</div>
+            <div class="note">*Ενδεικτική αποτύπωση (όχι “ταμπέλα”).</div>
           </div>
 
           <div class="metric">
@@ -350,9 +356,9 @@
   </div>
 
 <script>
+  // ✅ κρατάμε αυτό όπως δουλεύει ήδη
   const FORMSPREE_ENDPOINT = "https://formspree.io/f/xbdyzgbw";
 
-  // -2..+2 κλίμακα
   const SCALE = [
     { v:"",  t:"— επίλεξε —" },
     { v:"-2",t:"-2  Διαφωνώ απόλυτα" },
@@ -362,9 +368,7 @@
     { v:"2", t:"+2  Συμφωνώ απόλυτα" },
   ];
 
-  // 10 statements, weights on 2 axes:
-  // econ: -1 (left) ... +1 (right)
-  // soc:  -1 (liberal) ... +1 (conservative)
+  // 10 statements, weights on 2 axes
   const QUESTIONS = [
     { id:"q1", text:"Το κράτος πρέπει να μειώνει ενεργά τις κοινωνικές ανισότητες.", econ:-1, soc:0 },
     { id:"q2", text:"Οι υψηλότεροι φόροι στους πολύ εύπορους είναι απαραίτητοι για κοινωνική συνοχή.", econ:-1, soc:0 },
@@ -439,7 +443,6 @@
   }
 
   function conclusionText(econPct, socPct){
-    // quadrant-ish summary
     let profile = "";
     if (econPct < -15 && socPct < -15) profile = "προοδευτικό/κοινωνικά ανοιχτό με έμφαση σε κοινωνικό κράτος";
     else if (econPct > 15 && socPct < -15) profile = "φιλελεύθερο οικονομικά με κοινωνικά ανοιχτές θέσεις";
@@ -451,21 +454,19 @@
   }
 
   function setBar(id, scorePct){
-    // map -100..100 to 0..100
-    const w = (scorePct + 100) / 2;
+    const w = (scorePct + 100) / 2; // -100..100 => 0..100
     $(id).style.width = w + "%";
   }
 
   function setCompassDot(econPct, socPct){
-    // x: econ (-100 left .. +100 right) -> 0..100
-    // y: soc (-100 liberal TOP .. +100 conservative BOTTOM) -> 0..100
     const x = (econPct + 100) / 2;
-    const y = (socPct + 100) / 2;
+    const y = (socPct + 100) / 2; // liberal top (-) => smaller => closer to top
     $("#dot").style.left = x + "%";
     $("#dot").style.top  = y + "%";
   }
 
   async function sendToFormspree(payload){
+    // Σιωπηλή αποστολή στο background — δεν εμφανίζουμε τίποτα στον χρήστη.
     const fd = new FormData();
     fd.append("email", payload.email);
     fd.append("econ", payload.econPct);
@@ -533,17 +534,15 @@ Soc: ${payload.socPct}
     $("#conclusion").innerHTML = concHTML;
     const concPlain = concHTML.replace(/<[^>]*>/g, "");
 
-    // Send
-    try{
-      showOk("Αποστολή αποτελέσματος…");
-      await sendToFormspree({ email, econPct, socPct, answers, conclusionPlain: concPlain });
-      showOk("OK — στάλθηκε. ✅");
-    }catch(err){
-      console.error(err);
-      showErr("Δεν μπόρεσα να στείλω email (Formspree). Έλεγξε το Formspree form/activation ή spam.");
-    }
-
     setCompassDot(econPct, socPct);
+
+    // Silent send (no visible messaging)
+    try {
+      await sendToFormspree({ email, econPct, socPct, answers, conclusionPlain: concPlain });
+    } catch (err) {
+      // σκόπιμα "σιωπηλό" — δεν δείχνουμε τίποτα στον χρήστη
+      console.error(err);
+    }
   });
 </script>
 </body>
