@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Πολιτικός Προσανατολισμός στην ΕΕ</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 760px; margin: 0 auto; padding: 18px; line-height: 1.35; }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    .sub { margin: 0 0 16px; opacity: .8; font-size: 14px; }
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 14px; margin: 12px 0; background: #fff; }
+    .q { margin: 0 0 10px; font-weight: 650; font-size: 15px; }
+    select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; background: #fff; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button { padding: 12px 16px; border-radius: 12px; border: 0; cursor: pointer; font-size: 16px; }
+    .warn { color: #b00020; font-weight: 700; margin-top: 10px; }
+    .result { white-space: pre-wrap; margin-top: 16px; padding: 14px; border-radius: 14px; background: #f6f6f6; border: 1px solid #e6e6e6; font-size: 14px; }
+    .debug { margin-top: 10px; font-size: 12px; opacity: .75; white-space: pre-wrap; }
+  </style>
+</head>
+
+<body>
+  <h1>Πολιτικός Προσανατολισμός στην ΕΕ</h1>
+  <p class="sub">Κλίμακα: -2 (διαφωνώ απόλυτα) έως +2 (συμφωνώ απόλυτα).</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <!-- ΟΙΚΟΝΟΜΙΑ -->
+    <div class="card">
+      <p class="q">1. Το κράτος πρέπει να παίζει ενεργό ρόλο στη μείωση των κοινωνικών ανισοτήτων.</p>
+      <select data-axis="economy"></select>
+    </div>
+    <div class="card">
+      <p class="q">2. Η ελεύθερη αγορά είναι πιο αποτελεσματική από το κράτος στη δημιουργία ευημερίας.</p>
+      <select data-axis="economy"></select>
+    </div>
+    <div class="card">
+      <p class="q">3. Οι υψηλοί φόροι στους πλούσιους αποθαρρύνουν την ανάπτυξη.</p>
+      <select data-axis="economy"></select>
+    </div>
+
+    <!-- ΚΟΙΝΩΝΙΚΑ -->
+    <div class="card">
+      <p class="q">4. Η κοινωνία πρέπει να προσαρμόζεται σε νέες μορφές οικογένειας και ταυτότητας.</p>
+      <select data-axis="social" data-invert="1"></select>
+    </div>
+    <div class="card">
+      <p class="q">5. Οι παραδοσιακές αξίες πρέπει να προστατεύονται, ακόμα κι αν περιορίζουν αλλαγές.</p>
+      <select data-axis="social"></select>
+    </div>
+    <div class="card">
+      <p class="q">6. Το κράτος πρέπει να παρεμβαίνει για την προώθηση της ισότητας φύλων και μειονοτήτων.</p>
+      <select data-axis="social" data-invert="1"></select>
+    </div>
+
+    <!-- ΘΕΣΜΟΙ -->
+    <div class="card">
+      <p class="q">7. Σε κρίση, ένας ισχυρός ηγέτης είναι προτιμότερος από χρονοβόρες δημοκρατικές διαδικασίες.</p>
+      <select data-axis="democracy"></select>
+    </div>
+    <div class="card">
+      <p class="q">8. Η ανεξαρτησία της Δικαιοσύνης είναι θεμέλιο της δημοκρατίας.</p>
+      <select data-axis="democracy" data-invert="1"></select>
+    </div>
+    <div class="card">
+      <p class="q">9. Τα ΜΜΕ πρέπει να ρυθμίζονται αυστηρά από το κράτος.</p>
+      <select data-axis="democracy"></select>
+    </div>
+
+    <!-- ΕΕ -->
+    <div class="card">
+      <p class="q">10. Η ΕΕ πρέπει να έχει περισσότερες αρμοδιότητες από τα κράτη-μέλη.</p>
+      <select data-axis="eu" data-invert="1"></select>
+    </div>
+    <div class="card">
+      <p class="q">11. Η εθνική κυριαρχία πρέπει να υπερισχύει των αποφάσεων της ΕΕ.</p>
+      <select data-axis="eu"></select>
+    </div>
+    <div class="card">
+      <p class="q">12. Η κοινή ευρωπαϊκή πολιτική σε άμυνα και μετανάστευση είναι απαραίτητη.</p>
+      <select data-axis="eu" data-invert="1"></select>
+    </div>
+
+    <div class="row">
+      <button type="button" onclick="calc()">Δες αποτέλεσμα</button>
+      <button type="button" onclick="resetForm()">Καθάρισμα</button>
+    </div>
+
+    <div id="warn" class="warn" style="display:none;">Συμπλήρωσε όλες τις ερωτήσεις πρώτα 🙂</div>
+  </form>
+
+  <div id="out" class="result" style="display:none;"></div>
+  <div id="debug" class="debug"></div>
+
+<script>
+  // επιλογές (χωρίς <template> για max συμβατότητα)
+  const optionsHTML = `
+    <option value="" selected>— επίλεξε —</option>
+    <option value="-2">Διαφωνώ απόλυτα</option>
+    <option value="-1">Διαφωνώ</option>
+    <option value="0">Ούτε/ούτε</option>
+    <option value="1">Συμφωνώ</option>
+    <option value="2">Συμφωνώ απόλυτα</option>
+  `;
+
+  function initSelects(){
+    document.querySelectorAll("select[data-axis]").forEach(sel => {
+      sel.innerHTML = optionsHTML;
+    });
+  }
+
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+  function to100(r){ return clamp(Math.round((r / 6) * 100), -100, 100); }
+
+  function calc(){
+    const debug = document.getElementById("debug");
+    try{
+      const selects = Array.from(document.querySelectorAll("select[data-axis]"));
+      const warn = document.getElementById("warn");
+      const out = document.getElementById("out");
+
+      if(selects.length !== 12){
+        debug.textContent = "DEBUG: Δεν βρέθηκαν 12 ερωτήσεις. Βρέθηκαν: " + selects.length;
+      }
+
+      if(selects.some(s => s.value === "")){
+        warn.style.display = "block";
+        out.style.display = "none";
+        return;
+      }
+      warn.style.display = "none";
+
+      const raw = { economy:0, social:0, democracy:0, eu:0 };
+
+      selects.forEach(s=>{
+        let v = Number(s.value);
+        if(s.dataset.invert === "1") v = -v;
+        raw[s.dataset.axis] += v;
+      });
+
+      const E = to100(raw.economy);
+      const S = to100(raw.social);
+      const D = to100(raw.democracy);
+      const U = to100(raw.eu);
+
+      const profile = [
+        E <= -20 ? "οικονομικά πιο αναδιανεμητικός" : (E >= 20 ? "οικονομικά πιο φιλο-αγορά" : "οικονομικά κεντρώος"),
+        S <= -20 ? "κοινωνικά πιο προοδευτικός" : (S >= 20 ? "κοινωνικά πιο συντηρητικός" : "κοινωνικά κεντρώος"),
+        D <= -20 ? "φιλελεύθερος στους θεσμούς" : (D >= 20 ? "πιο αυταρχικός στους θεσμούς" : "μικτή στάση στους θεσμούς"),
+        U <= -20 ? "φιλοευρωπαϊκός" : (U >= 20 ? "ευρωσκεπτικιστής" : "ουδέτερος για την ΕΕ")
+      ].join(", ");
+
+      out.style.display = "block";
+      out.textContent =
+`ΑΠΟΤΕΛΕΣΜΑ
+
+Οικονομία: ${E}  (− κράτος / + αγορά)
+Κοινωνικά: ${S}  (− προοδευτικό / + συντηρητικό)
+Θεσμοί:    ${D}  (− φιλελεύθερο / + αυταρχικό)
+ΕΕ:        ${U}  (− φιλο-ΕΕ / + ευρωσκεπτικιστικό)
+
+Σύνοψη: ${profile}`;
+
+      out.scrollIntoView({ behavior: "smooth", block: "start" });
+      debug.textContent = "";
+    } catch(err){
+      document.getElementById("debug").textContent = "JS ERROR: " + (err && err.message ? err.message : String(err));
+    }
+  }
+
+  function resetForm(){
+    document.getElementById("quiz").reset();
+    document.getElementById("out").style.display = "none";
+    document.getElementById("warn").style.display = "none";
+    document.getElementById("debug").textContent = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // init
+  initSelects();
+</script>
+</body>
+</html>
